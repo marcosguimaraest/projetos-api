@@ -2,7 +2,7 @@ package com.marcos.apirestfull.model;
 
 
 import java.io.Serializable;
-
+import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.springframework.hateoas.RepresentationModel;
@@ -33,4 +33,15 @@ public class ProjetoModel extends RepresentationModel<ProjetoModel> implements S
 	private String descricao;
 	private URL url;
 	
+	public URL getUrl() {
+		return url;
+	}
+	
+	public void setUrl(String urlString){
+		try {
+			url = new URL(urlString);
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
+	}
 }
