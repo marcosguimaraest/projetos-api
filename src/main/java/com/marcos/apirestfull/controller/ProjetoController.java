@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.marcos.apirestfull.model.ProjetoModel;
@@ -31,21 +33,27 @@ public class ProjetoController {
 		
 		for(ProjetoModel projeto : listaProjetos) {
 			Long id = projeto.getId();
-			projeto.add(WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(ProjetoController.class).getOneProduto(id)).withSelfRel());
+			projeto.add(WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(ProjetoController.class).getOneProjeto(id)).withSelfRel());
 		}
 		
 		return new ResponseEntity<List<ProjetoModel>>(listaProjetos, HttpStatus.OK);
 		
 	}
 	
-	@GetMapping("produtos/{id}")
-	public ResponseEntity<ProjetoModel> getOneProduto(@PathVariable(value="id") Long id){
+	@GetMapping("/projetos/{id}")
+	public ResponseEntity<ProjetoModel> getOneProjeto(@PathVariable(value="id") Long id){
 		Optional<ProjetoModel> projeto = projetoRepository.findById(id);
 		if(!projeto.isPresent()) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 		
-		projeto.get().add(WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(ProjetoController.class).getOneProduto(id)).withRel("Lista de projetos"));
+		projeto.get().add(WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(ProjetoController.class).getOneProjeto(id)).withRel("Lista de projetos"));
 		return new ResponseEntity<ProjetoModel>(projeto.get(), HttpStatus.OK);
+	}
+	
+	@PostMapping("/projetos")
+	public ResponseEntity<ProjetoModel> saveProjeto(@RequestBody ProjetoModel projetoModel){
+		return new ResponseEntity<ProjetoModel>(projetoRepository.save(projetoModel), HttpStatus.OK);
+		
 	}
 }
