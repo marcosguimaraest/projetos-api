@@ -56,7 +56,9 @@ public class ProjetoController {
 	
 	@PostMapping("/projetos")
 	public ResponseEntity<ProjetoModel> saveProjeto(@RequestBody ProjetoModel projetoModel){
-		return new ResponseEntity<ProjetoModel>(projetoRepository.save(projetoModel), HttpStatus.OK);
+		ProjetoModel projetoSalvo = projetoRepository.save(projetoModel);
+		projetoSalvo.add(WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(ProjetoController.class).getAllProjetos()).withRel("Lista de projetos"));
+		return new ResponseEntity<ProjetoModel>(projetoSalvo, HttpStatus.OK);
 	}
 	
 	@PutMapping("/projetos/{id}")
@@ -64,21 +66,22 @@ public class ProjetoController {
 		Optional<ProjetoModel> projeto = projetoRepository.findById(id);
 		if(!projeto.isPresent()) {
 			projetoModel.setId(id);
-			return new ResponseEntity<ProjetoModel>(projetoRepository.save(projetoModel), HttpStatus.OK);
+			ProjetoModel projetoSalvo = projetoRepository.save(projetoModel);
+			projetoSalvo.add(WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(ProjetoController.class).getAllProjetos()).withRel("Lista de projetos"));
+			return new ResponseEntity<ProjetoModel>(projetoSalvo, HttpStatus.OK);
 		}
 		ProjetoModel projetoUpdate = projeto.get();
 			projetoUpdate.setNome(projetoModel.getNome());
 			projetoUpdate.setDescricao(projetoModel.getDescricao());
 			projetoUpdate.setUrl(projetoModel.getUrl().toString());
-			
+			projetoUpdate.add(WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(ProjetoController.class).getAllProjetos()).withRel("Lista de projetos"));
 			return new ResponseEntity<ProjetoModel>(projetoRepository.save(projeto.get()), HttpStatus.OK);
 		
 	}
 	
 	@DeleteMapping("/projetos/{id}")
 	public ResponseEntity<List<ProjetoModel>>deleteProjeto(@PathVariable Long id){
-		projetoRepository.deleteById(id);
-		return new ResponseEntity<List<ProjetoModel>>(projetoRepository.findAll(), HttpStatus.OK);
+		return new ResponseEntity<List<ProjetoModel>>(HttpStatus.NO_CONTENT);
 	}
 }
 	
